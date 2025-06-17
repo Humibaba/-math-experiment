@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>ניסוי בחשבון</title>
+  <style>
+    body { font-family: sans-serif; direction: rtl; padding: 2em; max-width: 800px; margin: auto; }
+    .hidden { display: none; }
+    .question { margin-bottom: 1em; }
+    .timer { font-weight: bold; font-size: 1.5em; margin-bottom: 1em; }
+    textarea { width: 100%; height: 4em; }
+    input[type="text"] { width: 5em; }
+  </style>
+</head>
+<body>
+
+<div id="start-screen">
+  <h1>ניסוי בחשבון</h1>
+  <p>הניסוי יכלול שני מבחנים בני 5 דקות כל אחד.</p>
+  <button onclick="startExperiment()">התחל</button>
+</div>
+
+<div id="test-screen" class="hidden">
+  <div id="timer" class="timer"></div>
+  <form id="test-form" onsubmit="submitTest(event)">
+    <div id="questions"></div>
+    <button type="submit">סיום מבחן</button>
+  </form>
+</div>
+
+<div id="result-screen" class="hidden">
+  <h2>תוצאות</h2>
+  <p>מבחן 1: <span id="score1"></span></p>
+  <p>מבחן 2: <span id="score2"></span></p>
+  <h3>טעויות:</h3>
+  <ul id="mistakes"></ul>
+  <p>העתק את הקוד הבא ושלח אותו לחוקרת:</p>
+  <textarea id="result-code" readonly></textarea>
+</div>
+
+<script>
+const questions1 = [
+  "2*(4+9):6+7*11", "9:(32-17)*2+1", "(12:3+5)*11+19", "5*(3+6):3-4*2", "18:(6+3)*2+7"
+  // יש להוסיף את כל השאלות מכאן בהתאם
+];
+
+const questions2 = [
+  "(5+7):2*3+8", "3*(7-3):2+9", "(10+6):2+3*2", "6*(4+2):3+5", "(13+3):4+2*3"
+  // יש להוסיף את כל השאלות מכאן בהתאם
+];
+
+let currentTest = 0;
+let answers = [[], []];
+let order = [];
+let timerInterval;
+let showTimer = true;
+
+function startExperiment() {
+  order = Math.random() < 0.5 ? ["visible", "hidden"] : ["hidden", "visible"];
+  document.getElementById("start-screen").classList.add("hidden");
+  currentTest = 0;
+  startTest();
+}
+
+function startTest() {
+  const questions = currentTest === 0 ? questions1 : questions2;
+  showTimer = order[currentTest] === "visible";
+  const qDiv = document.getElementById("questions");
+  qDiv.innerHTML = "";
+  questions.forEach((q, i) => {
+    qDiv.innerHTML += `
+      <div class="question">
+        ${i + 1}. ${q} = <input type="text" name="q${i}" required>
+      </div>`;
+  });
+  document.getElementById("test-form").reset();
+  document.getElementById("test-screen").classList.remove("hidden");
+  startTimer(5 * 60);
+}
+
+function startTimer(duration) {
+  let time = duration;
+  const timerDiv = document.getElementById("timer");
+  timerDiv.style.display = showTimer ? "block" : "none";
+  timerDiv.textContent = formatTime(time);
+  timerInterval = setInterval(() => {
+    time--;
+    if (showTimer) timerDiv.textContent = formatTime(time);
+    if (time <= 0) {
+      clearInterval(timerInterval);
+      submitTest();
+    }
+  }, 1000);
+}
+
+function formatTime(t) {
+  const min = Math.floor(t / 60);
+  const sec = t % 60;
+  return `${min}:${sec.toString().padStart(2, '0')}`;
+}
+
+function submitTest(e) {
+  if (e) e.preventDefault();
+  clearInterval(timerInterval);
+  const data = new FormData(document.getElementById("test-form"));
+  answers[currentTest] = [];
+  for (let [key, value] of data.entries()) {
+    answers[currentTest].push(value.trim());
+  }
+  document.getElementById("test-screen").classList.add("hidden");
+  currentTest++;
+  if (currentTest < 2) {
+    startTest();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  document.getElementById("result-screen").classList.remove("hidden");
+  document.getElementById("score1").textContent = `${answers[0].length} תשובות`; // לא בודק נכונות
+  document.getElementById("score2").textContent = `${answers[1].length} תשובות`;
+  const mistakes = document.getElementById("mistakes");
+  mistakes.innerHTML = "";
+  [questions1, questions2].forEach((qs, i) => {
+    qs.forEach((q, idx) => {
+      const ans = answers[i][idx];
+      if (ans === "") {
+        const li = document.createElement("li");
+        li.textContent = `מבחן ${i + 1}, שאלה ${idx + 1}: לא נענה`; 
+        mistakes.appendChild(li);
+      }
+    });
+  });
+  const summary = {
+    order,
+    answers
+  };
+  document.getElementById("result-code").value = JSON.stringify(summary, null, 2);
+}
+</script>
+
+</body>
+</html>
