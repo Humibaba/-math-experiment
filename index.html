@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <title>בחינה</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    .hidden { display: none; }
+    .question { margin-bottom: 20px; }
+    .timer { font-weight: bold; font-size: 1.2em; margin-bottom: 10px; }
+    textarea { width: 100%; height: 40px; }
+    .center { text-align: center; }
+  </style>
+</head>
+<body>
+  <div id="intro">
+    <h1>הוראות הבחינה</h1>
+    <p>היי! הניסוי נועד לבדוק השפעות של דדליין גלוי על ביצועים במשימות. כל הניסוי יערוך 10-15 דקות בערך.
+הניסוי כולל שתי בחינות שכוללות 60 תרגילים כל אחת שאמורים להיות ברמה של כיתה ג בחשבון. כל בחינה תיקח 5 דקות בדיוק. אשמח אם תבצעו את שתי הבחינות אחת אחרי השנייה. 
+אמורים לפתור אותן באמצעות דף ועיפרון בלבד, ללא מחשבון.
+תודה רבה על העזרה!
+תמר
+</p>
+    <label>שם הנבחנ/ת: <input type="text" id="nameInput" /></label><br /><br />
+    <button onclick="startTest()">התחל</button>
+  </div>
+
+  <div id="test" class="hidden">
+    <div class="timer" id="timer"></div>
+    <form id="testForm"></form>
+    <div class="center">
+      <button onclick="submitTest(event)">סיים מבחן</button>
+    </div>
+  </div>
+
+  <div id="between" class="hidden">
+    <h2>המבחן הסתיים</h2>
+    <button onclick="startSecondTest()">המשך לבחינה השנייה</button>
+  </div>
+
+  <div id="done" class="hidden">
+    <h2>תודה רבה!</h2>
+    <button onclick="sendResults()">שלח תוצאות</button>
+  </div>
+
+  <script>
+  const questions1 = [
+  "2*(4+9):6+7*11", "9:(32-17)*2+1", "(12:3+5)*11+19", "5*(3+6):3-4*2",
+  "18:(6+3)*2+7", "(15-5)*3+6:2", "4*(9-4):5+3*2", "(10+5)*2:5+6",
+  "8:2*(4+1)-7", "(12-4):2+5*3", "6*3+2*(7-5):2", "(8+2)*3:6+4",
+  "14-6*(3+2):5", "7+(18:3)*(2+1)", "(5+3)*2+9:3", "(4+12):4+5*2",
+  "9:3+6*(5-2)", "6*(2+4)-8:2", "(10+6):2+3*4", "(18-6)*2+12:4",
+  "3*(5+4)-7:1", "15:(3+2)+8*2", "(6+9):3+5*2", "12*(3-1):6+7",
+  "4*(2+7):3+10", "(9+6):3+4*2", "8*(5-3):2+6", "(7+5):4*3+8",
+  "10:2+(6+3)*2", "(18:3+2)*4-5", "5*(6-2):4+3", "(12+8):5+3*2",
+  "9:3+(5+4)*2", "(6*2+3):3+5", "(8+4):2*3+1", "3*(7+2):3+6",
+  "(14+6):4+2*5", "7*(5-2):3+4", "(10+8):2*2+5", "6*(3+2):4+7",
+  "(5+9):3*2+6", "4*(6-2):2+9", "(8+7):3*2+5", "3*(9-3):3+8",
+  "(12+6):3*2+7", "5*(7-2):5+6", "(14+4):2+3*2", "8*(4-1):3+5",
+  "(6+10):4+2*3", "3*(5+1):2+7", "(16+2):4+5*1", "7*(3+4):2+6",
+  "(11+1):2*3+5", "4*(5+3):4+9", "(6+9):3+4*1", "3*(8-2):2+6",
+  "(12+4):4+3*3", "5*(6-1):3+7", "(10+8):2+2*2", "6*(3+3):6+4"
+];
+
+const questions2 = [
+  "(14+2):4+3*2", "7*(5-1):2+6", "(9+3):3+5*2", "4*(6+2):4+3",
+  "(5+7):2*3+8", "3*(7-3):2+9", "(10+6):2+3*2", "6*(4+2):3+5",
+  "(13+3):4+2*3", "5*(8-4):2+7", "(12+6):3*2+4", "4*(5+1):3+6",
+  "(10+5):5+3*2", "6*(3+4):2+5", "(9+3):3+2*4", "5*(6-3):3+8",
+  "(14+2):4+3*2", "7*(4+1):5+6", "(8+7):3+2*3", "4*(6+3):6+5",
+  "(10+2):2+3*1", "3*(9-3):2+7", "(12+3):3+4*2", "5*(5+2):7+6",
+  "(16+4):4+3*1", "7*(3+5):4+9", "(11+1):2*2+4", "4*(7+2):3+5",
+  "(6+8):4+2*2", "3*(8-2):3+7", "(14+2):2+3*1", "5*(6+1):3+8",
+  "(9+6):3+2*3", "6*(3+5):4+6", "(10+4):2+3*2", "4*(7-2):2+5",
+  "(12+6):3*1+9", "5*(5+3):4+7", "(11+3):2+3*3", "7*(6-2):3+8",
+  "(10+8):4+2*3", "4*(5+4):3+6", "(6+9):3+3*2", "3*(7-1):2+5",
+  "(13+3):4+2*4", "6*(5+1):3+7", "(12+4):2+3*2", "4*(6-3):2+8",
+  "(8+10):6+2*3", "5*(4+3):3+6", "(9+6):3+3*1", "6*(3+2):2+4",
+  "(11+5):4+2*2", "4*(7-3):2+9", "(13+3):3+2*2", "7*(5+1):2+6",
+  "(12+6):4+3*2", "5*(6-2):2+7", "(10+8):3+2*1", "4*(5+2):3+6",
+  "(9+9):3+4*2", "6*(3+3):4+7", "(11+3):2+3*1", "3*(8-4):2+6",
+  "(14+2):2+2*3", "5*(7+1):3+9", "(10+6):2+3*3", "4*(6-3):3+8"
+];
+
+const correctAnswers = [ 81.33, 2.20, 118.00, 7.00, 11.00, 33.00, 10.00, 12.00, 13.00, 19.00, 20.00, 9.00,
+      8.00, 25.00, 19.00, 14.00, 21.00, 32.00, 20.00, 27.00, 20.00, 19.00, 15.00, 11.00,
+      22.00, 13.00, 14.00, 17.00, 23.00, 27.00, 8.00, 10.00, 21.00, 10.00, 19.00, 15.00,
+      15.00, 11.00, 23.00, 14.50, 15.33, 17.00, 15.00, 14.00, 19.00, 11.00, 15.00, 13.00,
+      10.00, 16.00, 9.50, 30.50, 23.00, 17.00, 9.00, 15.00, 13.00, 15.33, 13.00, 10.00,
+      10.00, 20.00, 14.00, 11.00, 26.00, 15.00, 14.00, 17.00, 10.00, 17.00, 16.00, 14.00,
+      9.00, 26.00, 12.00, 13.00, 10.00, 13.00, 11.00, 11.00, 9.00, 16.00, 13.00, 11.00,
+      8.00, 23.00, 16.00, 17.00, 7.50, 13.00, 11.00, 19.67, 11.00, 18.00, 13.00, 15.00,
+      15.00, 17.00, 16.00, 17.33, 10.50, 18.00, 11.00, 14.00, 12.00, 19.00, 14.00, 14.00,
+      9.00, 17.67, 8.00, 19.00, 8.00, 17.00, 9.33, 27.00, 10.50, 17.00, 8.00, 15.33,
+      14.00, 16.00, 10.00, 12.00, 14.00, 22.33, 17.00, 12.00/* רשימת הפתרונות לכל השאלות */ ];
+
+    let results = {
+      name: '',
+      startTime: '',
+      endTime: '',
+      tests: []
+    };
+
+    let testIndex = 0;
+    let startTime, interval, visibleTimer;
+
+    function startTest() {
+      const name = document.getElementById('nameInput').value.trim();
+      if (!name) return alert("נא למלא שם");
+      results.name = name;
+      document.getElementById('intro').classList.add('hidden');
+      testIndex = Math.random() < 0.5 ? 0 : 1;
+      runTest();
+    }
+
+    function runTest() {
+      const isVisible = (testIndex === 0);
+      const questions = testIndex === 0 ? questions1 : questions2;
+      const form = document.getElementById('testForm');
+      form.innerHTML = '';
+      document.getElementById('test').classList.remove('hidden');
+      const timerEl = document.getElementById('timer');
+      if (!isVisible) timerEl.classList.add('hidden');
+      else timerEl.classList.remove('hidden');
+      
+      questions.forEach((q, i) => {
+        form.innerHTML += `
+          <div class="question">
+            <label>${i + 1}. ${q}<br />
+              <textarea name="q${i}"></textarea>
+            </label>
+          </div>`;
+      });
+
+      startTime = Date.now();
+      let seconds = 300;
+      visibleTimer = isVisible;
+
+      interval = setInterval(() => {
+        seconds--;
+        if (visibleTimer) timerEl.textContent = `זמן שנותר: ${Math.floor(seconds/60)}:${(seconds%60).toString().padStart(2,'0')}`;
+        if (seconds <= 0) {
+          clearInterval(interval);
+          submitTest();
+        }
+      }, 1000);
+    }
+
+    function submitTest(event) {
+      if (event) event.preventDefault();
+      clearInterval(interval);
+      const formData = new FormData(document.getElementById('testForm'));
+      const answers = [];
+      const questions = testIndex === 0 ? questions1 : questions2;
+      const offset = testIndex === 0 ? 0 : questions1.length;
+
+      for (let i = 0; i < questions.length; i++) {
+        const ans = formData.get(`q${i}`)?.trim() || '';
+        const correct = parseFloat(correctAnswers[i + offset].toFixed(2));
+        const given = parseFloat(ans);
+        let status = 'לא הוגש';
+        if (ans) {
+          status = Math.abs(correct - given) < 0.1 ? 'נכון' : 'שגוי';
+        }
+        answers.push({ question: questions[i], answer: ans, correct, status });
+      }
+
+      results.tests.push({
+        type: testIndex === 0 ? 'טיימר גלוי' : 'טיימר נסתר',
+        start: new Date(startTime).toISOString(),
+        end: new Date().toISOString(),
+        answers
+      });
+
+      document.getElementById('test').classList.add('hidden');
+      if (results.tests.length === 1) {
+        testIndex = testIndex === 0 ? 1 : 0;
+        document.getElementById('between').classList.remove('hidden');
+      } else {
+        document.getElementById('done').classList.remove('hidden');
+      }
+    }
+
+    function startSecondTest() {
+      document.getElementById('between').classList.add('hidden');
+      runTest();
+    }
+
+    function sendResults() {
+      const mailData = {
+        service_id: 'default_service',
+        template_id: 'template_xxx',
+        user_id: 'user_xxx',
+        template_params: {
+          subject: 'תוצאות מבחן - ' + results.name,
+          message: JSON.stringify(results, null, 2)
+        }
+      };
+
+      fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(mailData)
+      }).then(() => {
+        alert("התוצאות נשלחו בהצלחה");
+      }).catch(() => {
+        alert("שליחת התוצאות נכשלה");
+      });
+    }
+  </script>
+</body>
+</html>
