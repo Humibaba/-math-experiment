@@ -171,12 +171,13 @@ const correctAnswers = [
 
       for (let i = 0; i < questions.length; i++) {
         const ans = formData.get(`q${i}`)?.trim() || '';
-        const correct = parseFloat(correctAnswers[i + offset].toFixed(2));
+       const correctRaw = correctAnswers[i + offset];
+const correct = typeof correctRaw === "number" ? parseFloat(correctRaw.toFixed(2)) : null;
         const given = parseFloat(ans);
         let status = 'לא הוגש';
-        if (ans) {
-          status = Math.abs(correct - given) < 0.1 ? 'נכון' : 'שגוי';
-        }
+       if (ans && correct !== null && !isNaN(given)) {
+  status = Math.abs(correct - given) < 0.1 ? 'נכון' : 'שגוי';
+}
         answers.push({ question: questions[i], answer: ans, correct, status });
       }
 
