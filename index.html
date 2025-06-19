@@ -34,12 +34,15 @@
   <div id="done" class="hidden">
   <h2>תודה רבה!</h2>
   <p>
-    הקובץ עם תוצאות המבחן ירד למחשב שלך. נא לשלוח אותו לכתובת:  
-    <strong>tamarnnn@gmail.com</strong><br />
+    הקובץ עם תוצאות המבחן ירד למחשב שלך. <br />
+    נא לשלוח אותו לכתובת: 
+ <strong>tamarnnn@gmail.com</strong><br />
+    ניתן לשלוח אותו במייל תחת הכותרת: "תוצאות מבחן" או פשוט לצרף כקובץ.<br /><br />
     תודה רבה על ההשתתפות!
   </p>
   <button onclick="downloadResults()">הורד קובץ תוצאות</button>
 </div>
+
 
 
   <script>
@@ -185,18 +188,32 @@ const correctAnswers = [ 81.33, 2.20, 118.00, 7.00, 11.00, 33.00, 10.00, 12.00, 
       runTest();
     }
 
- function downloadResults() {
-  const filename = `תוצאות_${results.name || 'ללא_שם'}.txt`;
-  const content = JSON.stringify(results, null, 2);
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+function downloadResults() {
+  let text = `תוצאות מבחן\n===============\n`;
+  text += `שם הנבחנ/ת: ${results.name}\n`;
+  text += `שעת התחלה: ${results.tests[0]?.start}\n`;
+  text += `שעת סיום: ${results.tests[1]?.end}\n\n`;
 
+  results.tests.forEach((test, index) => {
+    text += `בחינה ${index + 1} (${test.type})\n`;
+    text += `------------------------\n`;
+    test.answers.forEach((ans, i) => {
+      text += `${i + 1}. ${ans.question} => תשובה: ${ans.answer || '---'}, תקינות: ${ans.status}\n`;
+    });
+    text += `\n`;
+  });
+
+ text += `נא לשלוח קובץ זה לכתובת: tamarnnn@gmail.com\n`;
+
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = filename;
+  link.download = `תוצאות_${results.name || 'ללא_שם'}.txt`;
   link.click();
 
-  alert("הקובץ ירד למחשב שלך. נא לשלוח אותו לכתובת tamarnnn@gmail.com");
+  alert("הקובץ ירד למחשב שלך. נא לשלוח אותו לכתובת tamar.research@gmail.com");
 }
+
 
   </script>
 </body>
