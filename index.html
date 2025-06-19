@@ -185,12 +185,19 @@ const correctAnswers = [
         answers.push({ question: questions[i], answer: ans, correct, status });
       }
 
-      results.tests.push({
-        type: testIndex === 0 ? 'טיימר גלוי' : 'טיימר נסתר',
-        start: new Date(startTime).toISOString(),
-        end: new Date().toISOString(),
-        answers
-      });
+    const endTime = Date.now();
+const durationMs = endTime - startTime;
+const durationMin = Math.floor(durationMs / 60000);
+const durationSec = Math.floor((durationMs % 60000) / 1000);
+
+results.tests.push({
+  type: testIndex === 0 ? 'טיימר גלוי' : 'טיימר נסתר',
+  start: new Date(startTime).toISOString(),
+  end: new Date(endTime).toISOString(),
+  duration: `${durationMin} דקות ו-${durationSec} שניות`,
+  answers
+});
+
 
       document.getElementById('test').classList.add('hidden');
       if (results.tests.length === 1) {
@@ -212,14 +219,18 @@ function downloadResults() {
   text += `שעת התחלה: ${results.tests[0]?.start}\n`;
   text += `שעת סיום: ${results.tests[1]?.end}\n\n`;
 
-  results.tests.forEach((test, index) => {
-    text += `בחינה ${index + 1} (${test.type})\n`;
-    text += `------------------------\n`;
-    test.answers.forEach((ans, i) => {
-      text += `${i + 1}. ${ans.question} => תשובה: ${ans.answer || '---'}, תקינות: ${ans.status}\n`;
-    });
-    text += `\n`;
+ results.tests.forEach((test, index) => {
+  text += `בחינה ${index + 1} (${test.type})\n`;
+  text += `------------------------\n`;
+  text += `זמן התחלה: ${test.start}\n`;
+  text += `זמן סיום: ${test.end}\n`;
+  text += `משך זמן: ${test.duration}\n`;
+  test.answers.forEach((ans, i) => {
+    text += `${i + 1}. ${ans.question} => תשובה: ${ans.answer || '---'}, תקינות: ${ans.status}\n`;
   });
+  text += `\n`;
+});
+
 
  text += `נא לשלוח קובץ זה לכתובת: tamarnnn@gmail.com\n`;
 
