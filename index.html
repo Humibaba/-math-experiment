@@ -179,29 +179,18 @@ const correctAnswers = [ 81.33, 2.20, 118.00, 7.00, 11.00, 33.00, 10.00, 12.00, 
       runTest();
     }
 
-    function sendResults() {
-      const mailData = {
-        service_id: 'default_service',
-        template_id: 'template_xxx',
-        user_id: 'user_xxx',
-        template_params: {
-          subject: 'תוצאות מבחן - ' + results.name,
-          message: JSON.stringify(results, null, 2)
-        }
-      };
+   function sendResults() {
+  const filename = `תוצאות_${results.name || 'ללא_שם'}.txt`;
+  const content = JSON.stringify(results, null, 2);
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
 
-      fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(mailData)
-      }).then(() => {
-        alert("התוצאות נשלחו בהצלחה");
-      }).catch(() => {
-        alert("שליחת התוצאות נכשלה");
-      });
-    }
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+
+  alert("קובץ התוצאות נוצר ויורד למחשב.");
+}
   </script>
 </body>
 </html>
