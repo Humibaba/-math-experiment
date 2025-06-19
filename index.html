@@ -32,9 +32,15 @@
   </div>
 
   <div id="done" class="hidden">
-    <h2>תודה רבה!</h2>
-    <button onclick="sendResults()">שלח תוצאות</button>
-  </div>
+  <h2>תודה רבה!</h2>
+  <p>
+    הקובץ עם תוצאות המבחן ירד למחשב שלך. נא לשלוח אותו לכתובת:  
+    <strong>tamarnnn@gmail.com</strong><br />
+    תודה רבה על ההשתתפות!
+  </p>
+  <button onclick="downloadResults()">הורד קובץ תוצאות</button>
+</div>
+
 
   <script>
   const questions1 = [
@@ -179,7 +185,7 @@ const correctAnswers = [ 81.33, 2.20, 118.00, 7.00, 11.00, 33.00, 10.00, 12.00, 
       runTest();
     }
 
-   function sendResults() {
+ function downloadResults() {
   const filename = `תוצאות_${results.name || 'ללא_שם'}.txt`;
   const content = JSON.stringify(results, null, 2);
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -189,8 +195,9 @@ const correctAnswers = [ 81.33, 2.20, 118.00, 7.00, 11.00, 33.00, 10.00, 12.00, 
   link.download = filename;
   link.click();
 
-  alert("קובץ התוצאות נוצר ויורד למחשב.");
+  alert("הקובץ ירד למחשב שלך. נא לשלוח אותו לכתובת tamarnnn@gmail.com");
 }
+
   </script>
 </body>
 </html>
