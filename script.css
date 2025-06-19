@@ -4,6 +4,8 @@ body {
   max-width: 800px;
   margin: auto;
   background-color: #a2dfe6 !important;
+  direction: rtl;
+  text-align: right;
 }
 
 .hidden {
