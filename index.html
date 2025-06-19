@@ -138,14 +138,15 @@ const correctAnswers = [
       if (!isVisible) timerEl.classList.add('hidden');
       else timerEl.classList.remove('hidden');
       
-      questions.forEach((q, i) => {
-        form.innerHTML += `
-          <div class="question">
-            <label>${i + 1}. ${q}<br />
-              <textarea name="q${i}"></textarea>
-            </label>
-          </div>`;
-      });
+     questions.forEach((q, i) => {
+  form.innerHTML += `
+    <div class="question">
+      <label>${i + 1}. <span class="math-question">${q}</span><br />
+        <textarea name="q${i}"></textarea>
+      </label>
+    </div>`;
+});
+
 
       startTime = Date.now();
       let seconds = 300;
