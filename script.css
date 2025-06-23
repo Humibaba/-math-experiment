@@ -8,6 +8,15 @@ body {
   text-align: right;
 }
 
+.intro-text {
+  background-color: #fffefa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  font-size: 1.1em;
+}
+
 .hidden {
   display: none;
 }
@@ -28,7 +37,7 @@ transition: transform 0.3s ease, box-shadow 0.3s ease;
 
 .timer {
   font-weight: bold;
-  font-size: 28px;
+  font-size: 36px;
   margin-bottom: 10px;
   position: sticky;
   top: 0;
