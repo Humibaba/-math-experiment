@@ -3,18 +3,22 @@ body {
   padding: 20px;
   max-width: 800px;
   margin: auto;
-  background-color:  #a2dfe6 !important;
+  background-color: #B4EBE6 !important; /* רקע כללי */
   direction: rtl;
   text-align: right;
+  color: black;
+
 }
 
 .intro-text {
-  background-color: #fffefa;
+  background-color: #FBF8EF; /* רקע עדין */
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 30px;
   line-height: 1.6;
   font-size: 1.1em;
+  border: 1px solid #80CBC4; /* גבול טורקיז עדין */
+  color: black;
 }
 
 .hidden {
@@ -24,15 +28,17 @@ body {
 .question {
   margin-bottom: 20px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background-color: #f9f9f9;
+  background-color: #ffffff; /* לבן נקי לשאלה */
   padding: 10px;
   border-radius: 8px;
+  border: 1px solid #80CBC4;
+  color: black;
 }
 
 .question:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  background-color: #fffefa;
+  background-color: #FBF8EF; /* רקע קרמי בעת ריחוף */
 }
 
 .timer {
@@ -46,14 +52,19 @@ body {
   margin-right: auto;
   background: white;
   padding: 10px;
-  border-bottom: 2px solid #ccc;
+  border-bottom: 2px solid #80CBC4;
   z-index: 999;
+  color: black;
 }
 
 textarea {
   width: 100%;
   height: 40px;
   font-size: 1.1em;
+  border: 1px solid #80CBC4;
+  border-radius: 6px;
+  padding: 5px;
+  background-color: #FBF8EF;
 }
 
 .center {
@@ -61,18 +72,20 @@ textarea {
 }
 
 button {
- font-size: 1.4em;
+  font-size: 1.4em;
   padding: 14px 28px;
   margin: 12px 0;
   cursor: pointer;
   border-radius: 8px;
-  border: 1px solid #888;
-  background-color: #e6a2c9;
+  border: 2px solid #DA9A2C;
+  background-color: #FFB433;
+  color: white;
   transition: background-color 0.2s, transform 0.2s;
 }
 
-  button:hover {
-  background-color: #e0e0e0;
+button:hover {
+  background-color: #DA9A2C;
+  transform: scale(1.03);
 }
 
 .math-question {
@@ -80,5 +93,5 @@ button {
   unicode-bidi: embed;
   display: inline-block;
   font-size: 1.3em;
+  color: black;
 }
-
